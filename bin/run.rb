@@ -1,4 +1,8 @@
 require_relative '../config/environment'
+require 'tty-prompt'
 
-puts "hello world"
+
+CLI.welcome
+CLI.login_menu
+
 
