@@ -11,7 +11,11 @@ def search_artist(name)
     result = artist.first
 end
 
-jb = search_artist("Justin Bieber").top_tracks(:US)
+jb_top_tracks = search_artist("Justin Bieber").top_tracks(:US)
+jb = jb_top_tracks.map {|s| [s.name, s.preview_url]}
+jb.each {|song| Song.create(title: song[0], artist: "Justin Bieber", genre: "Pop", preview_url: song[1])}
+
+
 
 
 
