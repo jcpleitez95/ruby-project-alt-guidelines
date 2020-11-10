@@ -29,34 +29,42 @@ class CLI
     def self.main_menu
         system ('clear')
         choices = { 
-            "View Playlist" => 1,
+            "View Playlists" => 1,
             "Create New Playlist" => 2,
             "Search for a song" => 3,
             "Play Random Song" => 4
         }
 
-
+        action = @@prompt.select("What would you like to do?", choices)
         case action
         when 1 
             
         when 2
-
-            Playlist.create
+            User.create_new_playlist
         when 3
-
-        when 4 
-
-        when 5
-
+            Song.songs_menu
+        when 4
+            songs_array = Song.all.map { |s| [s.title, s.artist, s.genre, s.preview_url]}
+            puts songs_array.sample
         end
 
     end
 
-    def my_playlists
-
-    end
 
 
 
 end
+
+
+# class Playlist
+#     def initialize(player_list)
+#       @player_list = player_list
+#     end
+  
+#     def add(add_song)
+#         add_song.each do |song|
+#             @player_list << song
+#         end
+#     end
+# end
 

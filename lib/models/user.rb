@@ -1,16 +1,12 @@
-# class User < ActiveRecord::Base
-#     has_many :playlists
-    
-
-# end
-
-
-
 require "tty-prompt"
 
 class User < ActiveRecord::Base
     has_many :playlists
     @@prompt = TTY::Prompt.new
+
+    def initialize (create_playlist)
+        @create_playlist = create_playlist
+    end
 
     def self.signup
         username = @@prompt.ask("What is your name?")
@@ -28,7 +24,7 @@ class User < ActiveRecord::Base
         if @user
             # self.display_menu
             system ('clear')
-        #    User.main_menu
+            CLI.main_menu
         else 
             puts "Unknown User or Password"
             sleep(1)
@@ -36,4 +32,18 @@ class User < ActiveRecord::Base
             CLI.login_menu
         end
     end
+
+    # def create_playlist(name)
+    #     Playlist.create(user_id: self.id, name: name)
+    # end
+
+    def self.create_new_playlist
+        system ('clear')
+        name = @@prompt.ask("What is the Playlist name? ")
+        Playlist.create()
+
+    end
 end
+
+
+
