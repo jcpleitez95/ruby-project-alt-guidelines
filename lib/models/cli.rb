@@ -1,4 +1,5 @@
 require 'tty-prompt'
+require 'tty-font'
 require 'rspotify'
 require 'json'
 require 'pry'
@@ -8,19 +9,20 @@ class CLI
     attr_accessor :user, :playlist, :song, :playlistsong
 
     @@prompt = TTY::Prompt.new
-    @@artii = Artii::Base.new :font =>'slant'
+    # @@artii = Artii::Base.new :font =>'standard'
     # @@user = nil
 
     def self.welcome
         system ('clear')
-        puts @@artii.asciify("Welcome to New Muse!")
+        font = TTY::Font.new(:doom)
+        pastel = Pastel.new
+        puts pastel.green(font.write("NewMuse"))
+        # puts pastel.green(dumbbell)
         # puts @@artii.asciify("The new generation music player!")
     end
 
     def self.login_menu
-        # system ('clear')
-        # puts "Welcome to"
-        # self.logo
+        CLI.welcome
         choices = { "Log In" => 1,
             "Sign Up" => 2
         }
@@ -48,7 +50,6 @@ class CLI
         username = @@prompt.ask("What is your name?")
         password = @@prompt.mask("What is your password?")
         if User.find_by(name: username, password: password)
-            # self.display_menu
             @user = User.find_by(name: username, password: password)
             @user
             CLI.main_menu
@@ -63,6 +64,7 @@ class CLI
 
     def self.main_menu
         system ('clear')
+        CLI.welcome
         choices = { 
             "View Playlists" => 1,
             "Create New Playlist" => 2,
@@ -76,6 +78,7 @@ class CLI
         when 1 
             playlist = @user.playlists
             puts playlist.map(&:name)
+            sleep (2)
             CLI.playlist_menu
         when 2
             name = @@prompt.ask("What will you name it?")
@@ -173,7 +176,7 @@ class CLI
             "Return to Main Menu" => 3,
         }
 
-        action = @@prompt.select("Now what?", choices)
+        action = @@prompt.select("What would you like to do?", choices)
         case action
         when 1
             playlist = @@prompt.ask("Which Playlist?")

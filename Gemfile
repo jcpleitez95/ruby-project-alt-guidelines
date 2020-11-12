@@ -14,6 +14,7 @@ gem "rspotify"
 gem 'tty-prompt'
 gem 'artii', '~> 2.1', '>= 2.1.2'
 gem 'ruby2d'
+gem 'tty-font'
 
 
 

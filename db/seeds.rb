@@ -136,17 +136,4 @@ tc.each {|song| Song.create(title: song[0], artist: "Tego Calderon", genre: "Lat
 
 
 
-
-
-
-# mike = User.create(name: "Mike") 
-# yellow = Song.create(title: "Yellow", artist: "Coldplay", genre: "Pop")
-# # mikes_playlist = Playlist.create(name: "Mikes")
-
-
-
-
-
-
-
 binding.pry
