@@ -8,15 +8,19 @@ class CLI
     attr_accessor :user, :playlist, :song, :playlistsong
 
     @@prompt = TTY::Prompt.new
+    @@artii = Artii::Base.new :font =>'slant'
     # @@user = nil
 
     def self.welcome
         system ('clear')
-        puts "Welcome to New Muse, the new generation music player!"
+        puts @@artii.asciify("Welcome to New Muse!")
+        # puts @@artii.asciify("The new generation music player!")
     end
 
     def self.login_menu
-        sleep(1.5)
+        # system ('clear')
+        # puts "Welcome to"
+        # self.logo
         choices = { "Log In" => 1,
             "Sign Up" => 2
         }
@@ -165,7 +169,8 @@ class CLI
     def self.playlist_menu
         choices = { 
             "View Playlist" => 1,
-            "Return to Main Menu" => 2,
+            "Delete Playlist" =>2,
+            "Return to Main Menu" => 3,
         }
 
         action = @@prompt.select("Now what?", choices)
@@ -174,11 +179,16 @@ class CLI
             playlist = @@prompt.ask("Which Playlist?")
             if Playlist.find_by(name: playlist)
                 @playlist = Playlist.find_by(name: playlist)
-                system 'clear'
                 puts @playlist.songs
                 CLI.playlist_sub_menu
             end
         when 2
+            playlist = @@prompt.ask("Which Playlist?")
+            if Playlist.find_by(name: playlist)
+                @playlist = Playlist.find_by(name: playlist)
+                @playlist.remove_playlist
+            end
+        when 3
             CLI.main_menu
         end
     end
@@ -197,12 +207,14 @@ class CLI
             if Song.find_by(title: title)
                 @song = Song.find_by(title: title)
                 @playlist.add_song_to_playlist(@song.id)
+                @playlist.songs
             end
         when 2
             title = @@prompt.ask("Which Song?")
             if Song.find_by(title: title)
                 @song = Song.find_by(title: title)
-                @playlist.add_song_to_playlist(@song.id)
+                @playlist.remove_song(@song.id)
+                @playlist.songs
             end
         when 3
             CLI.main_menu
@@ -210,7 +222,9 @@ class CLI
         CLI.playlist_sub_menu
     end
 
+
 end
+
 
 
 
