@@ -6,7 +6,7 @@ Song.destroy_all
 User.destroy_all
 Playlist.destroy_all
 
-RSpotify.authenticate("c95094077b534f878a9eeb73a36f8f0d", "32f89fc427dd464d9ce07e74fcf5c370")
+RSpotify.authenticate("c95094077b534f878a9eeb73a36f8f0d", "7b039970587b4751bfd8c22363eddcdd")
 
 def search_artist(name)
     artist = RSpotify::Artist.search(name)
@@ -136,4 +136,4 @@ tc.each {|song| Song.create(title: song[0], artist: "Tego Calderon", genre: "Lat
 
 
 
-binding.pry
+# binding.pry
