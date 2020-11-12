@@ -7,42 +7,15 @@ class User < ActiveRecord::Base
     def initialize (create_playlist)
         @create_playlist = create_playlist
     end
-
-    def self.signup
-        username = @@prompt.ask("What is your name?")
-        password = @@prompt.mask("What is your password?")
-        age = @@prompt.ask("How old are you?")
-        email = @@prompt.ask("What is your email address?")
-        User.create(name: username, password: password, age: age, email: email)
-        User.login
+    
+    def playlists
+        Playlist.all.select {|p| p.user_id == self.id}
     end
 
-    def self.login
-        username = @@prompt.ask("What is your name?")
-        password = @@prompt.mask("What is your password?")
-        @user = User.find_by(name: username, password: password)
-        if @user
-            # self.display_menu
-            system ('clear')
-            CLI.main_menu
-        else 
-            puts "Unknown User or Password"
-            sleep(1)
-            system ('clear')
-            CLI.login_menu
-        end
+    def add_song_to_playlist(playlist, song)
+        Playlistsong.create(playlist_id: playlist, song_id: song)
     end
 
-    # def create_playlist(name)
-    #     Playlist.create(user_id: self.id, name: name)
-    # end
-
-    def self.create_new_playlist
-        system ('clear')
-        name = @@prompt.ask("What is the Playlist name? ")
-        Playlist.create()
-
-    end
 end
 
 

@@ -5,8 +5,10 @@ require 'pry'
 
 class CLI
 
+    attr_accessor :user, :playlist, :song, :playlistsong
+
     @@prompt = TTY::Prompt.new
-    @@user = nil
+    # @@user = nil
 
     def self.welcome
         system ('clear')
@@ -20,51 +22,195 @@ class CLI
         }
         choice = @@prompt.select("Would you like to sign up or log in?", choices)
         if choice == 1
-            User.login
+            CLI.login
         elsif choice == 2
-            User.signup
+            CLI.signup
         end
     end
+
+    def self.signup
+        username = @@prompt.ask("What is your name?")
+        password = @@prompt.mask("What is your password?")
+        age = @@prompt.ask("How old are you?")
+        email = @@prompt.ask("What is your email address?")
+        puts "Welcome to New Muse!"
+        sleep(1)
+        @user = User.create(name: username, password: password, age: age, email: email)
+        @user
+        CLI.main_menu
+    end
+
+    def self.login
+        username = @@prompt.ask("What is your name?")
+        password = @@prompt.mask("What is your password?")
+        if User.find_by(name: username, password: password)
+            # self.display_menu
+            @user = User.find_by(name: username, password: password)
+            @user
+            CLI.main_menu
+        else 
+            puts "Unknown User or Password"
+            sleep(1)
+            system ('clear')
+            CLI.login_menu
+        end
+    end
+
 
     def self.main_menu
         system ('clear')
         choices = { 
             "View Playlists" => 1,
             "Create New Playlist" => 2,
-            "Search for a song" => 3,
-            "Play Random Song" => 4
+            "Search Music" => 3,
+            "I'm Feeling Adventurous" => 4,
+            "Exit" => 5
         }
 
         action = @@prompt.select("What would you like to do?", choices)
         case action
         when 1 
-            
+            playlist = @user.playlists
+            puts playlist.map(&:name)
+            CLI.playlist_menu
         when 2
-            User.create_new_playlist
+            name = @@prompt.ask("What will you name it?")
+            Playlist.create(user_id: @user.id, name: name)
         when 3
-            Song.songs_menu
+            CLI.songs_menu
         when 4
-            songs_array = Song.all.map { |s| [s.title, s.artist, s.genre, s.preview_url]}
-            puts songs_array.sample
+            @song = Song.all.sample
+            puts @song.title
+            puts @song.artist
+            puts @song.preview_url
+            CLI.random_song_menu
+        when 5
+            puts "See you soon!"
+            sleep (2)
+            exit
         end
-
+        
     end
 
+    def self.songs_menu
+        system ('clear')
+        choices = { 
+            "Title" => 1,
+            "Artist" => 2,
+            "Genre" => 3,
+            "Return to Main Menu" => 4
+        }
+        action = @@prompt.select("Search by:", choices)
+        case action
+    
+        when 1
+            title = @@prompt.ask("Title of song?")
+            songs = Song.all.select {|s| s.title == title}
+            puts songs.map {|s| [s.title, s.preview_url]}
+        when 2
+            artist = @@prompt.ask("Artist of song?")
+            songs = Song.all.select {|s| s.artist == artist}
+            puts songs.map {|s| [s.title, s.preview_url]}
+        when 3
+            genre = @@prompt.ask("Genre of song?")
+            songs = Song.all.select {|s| s.genre == genre}
+            puts songs.map {|s| [s.title, s.preview_url]}
+        when 4
+            CLI.main_menu
+        end
+        CLI.add_song
+    end
 
+    def self.add_song
+        choices = { 
+            "Add Song to Playlist" => 1,
+            "Return to Main Menu" => 2,
+        }
 
+        action = @@prompt.select("What now?", choices)
+        case action
+        when 1
+            song = @@prompt.ask("Which Song?")
+            playlist = @@prompt.ask("Which Playlist?")
+            if Playlist.find_by(name: playlist) && Song.find_by(title: song)
+                @playlist = Playlist.find_by(name: playlist)
+                @song = Song.find_by(title: song)
+                @playlist.add_song_to_playlist(@song.id)
+            end
+            CLI.add_song
+        when 2
+            CLI.main_menu
+        end
+    end
+
+    def self.random_song_menu
+        choices = { 
+            "Add Song to Playlist" => 1,
+            "Return to Main Menu" => 2,
+        }
+
+        action = @@prompt.select("What now?", choices)
+        case action
+        when 1
+            playlist = @@prompt.ask("Which Playlist?")
+            if Playlist.find_by(name: playlist)
+                @playlist = Playlist.find_by(name: playlist)
+                @playlist.add_song_to_playlist(@song.id)
+            end
+        when 2
+            CLI.main_menu
+        end
+    end
+
+    def self.playlist_menu
+        choices = { 
+            "View Playlist" => 1,
+            "Return to Main Menu" => 2,
+        }
+
+        action = @@prompt.select("Now what?", choices)
+        case action
+        when 1
+            playlist = @@prompt.ask("Which Playlist?")
+            if Playlist.find_by(name: playlist)
+                @playlist = Playlist.find_by(name: playlist)
+                system 'clear'
+                puts @playlist.songs
+                CLI.playlist_sub_menu
+            end
+        when 2
+            CLI.main_menu
+        end
+    end
+
+    def self.playlist_sub_menu
+        choices = { 
+            "Add Song to Playlist" => 1,
+            "Delete Song from Playlist" => 2,
+            "Return to Main Menu" => 3
+        }
+
+        action = @@prompt.select("What now?", choices)
+        case action
+        when 1
+            title = @@prompt.ask("Which Song?")
+            if Song.find_by(title: title)
+                @song = Song.find_by(title: title)
+                @playlist.add_song_to_playlist(@song.id)
+            end
+        when 2
+            title = @@prompt.ask("Which Song?")
+            if Song.find_by(title: title)
+                @song = Song.find_by(title: title)
+                @playlist.add_song_to_playlist(@song.id)
+            end
+        when 3
+            CLI.main_menu
+        end
+        CLI.playlist_sub_menu
+    end
 
 end
 
 
-# class Playlist
-#     def initialize(player_list)
-#       @player_list = player_list
-#     end
-  
-#     def add(add_song)
-#         add_song.each do |song|
-#             @player_list << song
-#         end
-#     end
-# end
 
