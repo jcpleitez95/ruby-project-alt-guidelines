@@ -9,16 +9,14 @@ class CLI
     attr_accessor :user, :playlist, :song, :playlistsong
 
     @@prompt = TTY::Prompt.new
-    # @@artii = Artii::Base.new :font =>'standard'
-    # @@user = nil
+
 
     def self.welcome
         system ('clear')
         font = TTY::Font.new(:doom)
         pastel = Pastel.new
         puts pastel.green(font.write("NewMuse"))
-        # puts pastel.green(dumbbell)
-        # puts @@artii.asciify("The new generation music player!")
+
     end
 
     def self.login_menu
