@@ -40,7 +40,7 @@ class CLI
         age = @@prompt.ask("How old are you?")
         email = @@prompt.ask("What is your email address?")
         puts "Welcome to New Muse!"
-        sleep(1)
+        sleep(2)
         @user = User.create(name: username, password: password, age: age, email: email)
         @user
         CLI.main_menu
@@ -83,6 +83,9 @@ class CLI
         when 2
             name = @@prompt.ask("What will you name it?")
             Playlist.create(user_id: @user.id, name: name)
+            puts "Playlist Created!"
+            sleep (2)
+            CLI.main_menu
         when 3
             CLI.songs_menu
         when 4
@@ -190,6 +193,9 @@ class CLI
             if Playlist.find_by(name: playlist)
                 @playlist = Playlist.find_by(name: playlist)
                 @playlist.remove_playlist
+                puts "Playlist Deleted!"
+                sleep (2)
+                CLI.playlist_menu
             end
         when 3
             CLI.main_menu
